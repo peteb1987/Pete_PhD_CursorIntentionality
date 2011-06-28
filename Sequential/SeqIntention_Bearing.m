@@ -1,10 +1,10 @@
-function [  ] = SeqIntention_Drift( track, click_times, click_locs, handles )
-%SEQINTENTION Sequential intention tracking using drift model method
+function [  ] = SeqIntention_Bearing( track, click_times, click_locs, handles )
+%SEQINTENTION Sequential intention tracking using bearing model method
 
 global CONSTANTS;
 global FLAGS;
 
-LAMBDA = 0.003;
+SIGMA = 1;
 BUFFER_LENGTH = 1000;
 
 % Set click index - which click is next
@@ -55,10 +55,9 @@ for k = 1:track.N
         prev_time = track.t(k-1);
         
         % Work out likelihood
-        sigma = (exp(2*LAMBDA*(time-prev_time))-1)/(2*LAMBDA);
-        mu = repmat(pos, N_locs, 1) - dummy_locs - exp(-LAMBDA*(time-prev_time))*(bsxfun(@minus,prev_pos,dummy_locs));
-        like = log(normpdf(mu(:,1), 0, sqrt(sigma)));
-        like = like + log(normpdf(mu(:,2), 0, sqrt(sigma)));
+        heading = atan2((pos(2)-prev_pos(2)),(pos(1)-prev_pos(1)));
+        target_bearings = atan2( bsxfun(@minus,dummy_locs(:,2),prev_pos(2)),bsxfun(@minus,dummy_locs(:,1),prev_pos(1)) );
+        like = log(normpdf(target_bearings, heading, sqrt(SIGMA)));
         
         % Add time and likelihoods to buffer
         time_buffer = [time_buffer; time];

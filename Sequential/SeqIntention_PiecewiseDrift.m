@@ -1,11 +1,15 @@
-function [  ] = SeqIntention_Drift( track, click_times, click_locs, handles )
+function [  ] = SeqIntention_PiecewiseDrift( track, click_times, click_locs, handles )
 %SEQINTENTION Sequential intention tracking using drift model method
 
 global CONSTANTS;
 global FLAGS;
 
+BUFFER_LENGTH = 100;
+RADIUS = 0;
+SIGMA_NEAR = 1;
 LAMBDA = 0.003;
-BUFFER_LENGTH = 1000;
+SIGMA_FAR = 1;
+CONST = 1;
 
 % Set click index - which click is next
 click_ind = 1;
@@ -55,10 +59,24 @@ for k = 1:track.N
         prev_time = track.t(k-1);
         
         % Work out likelihood
-        sigma = (exp(2*LAMBDA*(time-prev_time))-1)/(2*LAMBDA);
-        mu = repmat(pos, N_locs, 1) - dummy_locs - exp(-LAMBDA*(time-prev_time))*(bsxfun(@minus,prev_pos,dummy_locs));
-        like = log(normpdf(mu(:,1), 0, sqrt(sigma)));
-        like = like + log(normpdf(mu(:,2), 0, sqrt(sigma)));
+        dist = sqrt((dummy_locs(:,1) - pos(1)).^2 + (dummy_locs(:,2) - pos(2)).^2);
+        
+        sigma_near = SIGMA_NEAR * (exp(2*LAMBDA*(time-prev_time))-1)/(2*LAMBDA);
+        mu_near = repmat(pos, N_locs, 1) - dummy_locs - exp(-LAMBDA*(time-prev_time))*(bsxfun(@minus,prev_pos,dummy_locs));
+        
+        tgt_vect = bsxfun(@minus, dummy_locs, prev_pos);
+        tgt_dist = sqrt(sum(tgt_vect.^2,2));
+        mu_far = repmat(pos-prev_pos, N_locs, 1) - CONST * (time-prev_time) * (bsxfun(@rdivide,tgt_vect,tgt_dist));
+        sigma_far = SIGMA_FAR * (time-prev_time);
+        
+        like_near = log(normpdf(mu_near(:,1), 0, sqrt(sigma_near)));
+        like_near = like_near + log(normpdf(mu_near(:,2), 0, sqrt(sigma_near)));
+        
+        like_far = log(normpdf(mu_far(:,1), 0, sqrt(sigma_far)));
+        like_far = like_far + log(normpdf(mu_far(:,2), 0, sqrt(sigma_far)));
+        
+        like = like_near;
+        like(dist>RADIUS) = like_far(dist>RADIUS);
         
         % Add time and likelihoods to buffer
         time_buffer = [time_buffer; time];

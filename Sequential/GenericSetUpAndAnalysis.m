@@ -29,7 +29,10 @@ end
 %%%%%
 
 % SeqIntention_Nearest(track, click_times, click_locs, handles);
-SeqIntention_Drift(track, click_times, click_locs, handles);
+% SeqIntention_Drift(track, click_times, click_locs, handles);
+% SeqIntention_PiecewiseDrift(track, click_times, click_locs, handles);
+% SeqIntention_Bearing(track, click_times, click_locs, handles);
+SeqIntention_Composite(track, click_times, click_locs, handles);
 
 %%%%%
 

@@ -2,7 +2,7 @@ clup;
 
 dbstop if error
 
-filename = '1Mouse.txt';
+filename = '14Mouse.txt';
 
 [track, sojourns, click_times, click_locs] = prelimProcessing(filename);
 K = length(sojourns);
@@ -10,7 +10,7 @@ K = length(sojourns);
 %%% TESTING AREA %%%
 
 v_thresh = 0.25;
-plot_list = 2:10;%K;
+plot_list = 2:20;%K;
 % plot_list(plot_list==7) = [];
 
 init_bng_errs = [];
