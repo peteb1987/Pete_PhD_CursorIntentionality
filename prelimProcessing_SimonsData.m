@@ -1,54 +1,30 @@
-function [track, sojourns, click_times, click_locs] = prelimProcessing(filename)
+function [track, sojourns, click_times, click_locs] = prelimProcessing_SimonsData(filename)
 % Input cursor data from file and clean it up.
 
 % Data input
-fid = fopen(filename);
-data = textscan(fid, '%u %u %u %s', 'delimiter', ',');
+load tracedata.mat
 
 track = struct('x', [], 'y', [], 't', []);
 
-x = double(data{1});
-y = double(data{2});
-timestamp = double(data{3});
-events = [data{4}; {''}];
+x = data(:,2);
+y = data(:,3);
+timestamp = data(:,4);
+events = data(:,1);
 
 % Offset time
 t0 = timestamp(1);
 t = timestamp - t0;
 N = length(t);
 
-% There's a lot of concurrent timestamps! For now, lets just delete the
-% data corresponding to the second one (unless its a click)
-for ii = N:-1:2
-    if t(ii) == t(ii-1)
-        ind_del = ii;
-        if strcmp(events{ind_del}, 'Click')
-            ind_del = ind_del - 1;
-        end
-        x(ind_del)=[];
-        y(ind_del)=[];
-        t(ind_del)=[];
-        events(ind_del)=[];
-        N = N - 1;
-    end
-end
-
 % Identify click times and locations
 click_times = [];
 click_locs = [];
-for ii = N:-1:1
-    if strcmp(events{ii}, 'Click')
+for ii = N-1:-1:1
+    if events(ii)~=events(ii+1)
         
         % Add to list
         click_times = [t(ii);click_times];
-        click_locs = [[x(ii-1), y(ii-1)]; click_locs];
-        
-        % Remove blank click rows
-        x(ii)=[];
-        y(ii)=[];
-        t(ii)=[];
-        events(ii)=[];
-        N = N - 1;
+        click_locs = [[x(ii), y(ii)]; click_locs];
         
     end
 end

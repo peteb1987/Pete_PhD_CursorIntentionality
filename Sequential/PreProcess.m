@@ -1,11 +1,9 @@
-function [track, sojourns, click_times, click_locs] = prelimProcessing(filename)
-% Input cursor data from file and clean it up.
+function [track, click_times, click_locs] = PreProcess( filename )
+%PREPROCESS Load and preprocess data for cursor intentionality
 
 % Data input
 fid = fopen(filename);
 data = textscan(fid, '%u %u %u %s', 'delimiter', ',');
-
-track = struct('x', [], 'y', [], 't', []);
 
 x = double(data{1});
 y = double(data{2});
@@ -53,30 +51,12 @@ for ii = N:-1:1
     end
 end
 
+track = struct('x', [], 'y', [], 't', [], 'events', [], 'N', []);
 track.x = x;
 track.y = y;
 track.t = t;
 track.N = N;
 track.events = events;
 
-% Add a click to the start and end of the data set
-click_times = [0; click_times; max(t)+1];
-click_locs = [[0 0]; click_locs; [0 0]];
-
-% K shall be the number of sojourns (inter-click periods)
-K = length(click_times) - 1;
-
-% Create a structure array of sojourns
-sojourns = repmat(struct('x', [], 'y', [], 't', [], 'events', [], 'N', []), K, 1);
-for k = 1:K
-    ind = (t>=click_times(k)) & (t<=click_times(k+1));
-    start = find(ind, 1, 'first');
-    stop = find(ind, 1, 'last');
-    sojourns(k).t = t(start:stop);
-    sojourns(k).x = x(start:stop);
-    sojourns(k).y = y(start:stop);
-    sojourns(k).events = events(start:stop);
-    sojourns(k).N = length(sojourns(k).t);
 end
 
-end
