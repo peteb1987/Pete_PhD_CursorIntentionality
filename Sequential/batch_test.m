@@ -11,8 +11,8 @@ filename = '14Mouse.txt';
 
 % Batch test
 global test_par;
-lambda_range = 0.005:0.001:0.02;
-buffer_range = [10:10:90, 100:100:2000];
+lambda_range = 0;0.001:0.001:0.01;
+buffer_range = [10:10:90 100:100:1500];
 results = zeros(length(buffer_range), length(lambda_range));
 for ii = 1:length(buffer_range)
     for jj = 1:length(lambda_range)
