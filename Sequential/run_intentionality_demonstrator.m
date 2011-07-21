@@ -4,10 +4,10 @@ clup;
 dbstop if error;
 
 % Select input
-filename = '14Mouse.txt';
+filename = '1Mouse.txt';
 
 % Load and pre-process data
 [track, click_times, click_locs] = PreProcess( filename );
 
 % Run Processing Function
-GenericSetUpAndAnalysis(track, click_times, click_locs);
+correct = GenericSetUpAndAnalysis(track, click_times, click_locs)

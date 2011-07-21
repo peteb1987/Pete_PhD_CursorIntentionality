@@ -1,11 +1,14 @@
-function [  ] = SeqIntention_Nearest( track, click_times, click_locs, handles )
+function [ correct_proportion ] = SeqIntention_Nearest( track, click_times, click_locs, handles )
 %SEQINTENTION Sequential intention tracking using nearest-over-window
 %method
 
 global CONSTANTS;
 global FLAGS;
 
-BUFFER_LENGTH = 1000;
+global test_par;
+BUFFER_LENGTH = test_par.BUFFER_LENGTH;
+
+% BUFFER_LENGTH = 1000;
 
 % Set click index - which click is next
 click_ind = 1;
@@ -84,10 +87,9 @@ for k = 1:track.N
     
 end
 
-disp(['Correct button: ' num2str(right_time) '. Wrong button: ' num2str(wrong_time) '.']);
+% disp(['Correct button: ' num2str(right_time) '. Wrong button: ' num2str(wrong_time) '.']);
 
-
-
+correct_proportion = right_time / (right_time+wrong_time);
 
 end
 

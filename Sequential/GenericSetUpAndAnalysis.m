@@ -1,4 +1,4 @@
-function [  ] = GenericSetUpAndAnalysis(track, click_times, click_locs)
+function [ correct ] = GenericSetUpAndAnalysis(track, click_times, click_locs)
 %GENERICSETUPANDANALYSIS Set up figures, call inference algorithms, analyse
 %results, etc.
 
@@ -6,7 +6,7 @@ global CONSTANTS;
 global FLAGS;
 
 % Flags
-FLAGS.PLOT = false;
+FLAGS.PLOT = true;
 
 % Constants
 CONSTANTS.DUMMY_SPACING = 100;
@@ -26,13 +26,17 @@ else
     handles = [];
 end
 
+correct = [];
+
 %%%%%
 
-% SeqIntention_Nearest(track, click_times, click_locs, handles);
-% SeqIntention_Drift(track, click_times, click_locs, handles);
+% [correct] = SeqIntention_Nearest(track, click_times, click_locs, handles);
+[correct] = SeqIntention_Drift(track, click_times, click_locs, handles);
+% [correct] = SeqIntention_Submovement(track, click_times, click_locs, handles);
+% [correct] = SeqIntention_ConstantJerk(track, click_times, click_locs, handles);
 % SeqIntention_PiecewiseDrift(track, click_times, click_locs, handles);
 % SeqIntention_Bearing(track, click_times, click_locs, handles);
-SeqIntention_Composite(track, click_times, click_locs, handles);
+% SeqIntention_Composite(track, click_times, click_locs, handles);
 
 %%%%%
 
